@@ -1,0 +1,1588 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Life — Medieval Simulator</title>
+
+<style>
+:root {
+    --bg: #171713;
+    --panel: #24241e;
+    --panel2: #303027;
+    --gold: #d9b56d;
+    --text: #eee8d8;
+    --muted: #aaa590;
+    --border: #504b3a;
+    --red: #b75d50;
+    --green: #8da879;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+header {
+    text-align: center;
+    padding: 30px 16px 20px;
+    background: #202019;
+    border-bottom: 2px solid var(--gold);
+}
+
+header h1 {
+    color: var(--gold);
+    font-size: clamp(28px, 5vw, 44px);
+    margin: 0 0 8px;
+    letter-spacing: 2px;
+}
+
+header p {
+    color: var(--muted);
+    margin: 0;
+}
+
+.container {
+    width: min(1100px, 94%);
+    margin: 24px auto;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h2, h3 {
+    color: var(--gold);
+    margin-top: 0;
+}
+
+button {
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    padding: 11px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--gold);
+    color: #211d14;
+}
+
+button:hover:not(:disabled) {
+    filter: brightness(1.12);
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+button.secondary {
+    background: var(--panel2);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+button.green {
+    background: var(--green);
+    color: #151810;
+}
+
+button.danger {
+    background: var(--red);
+    color: white;
+}
+
+.start-screen {
+    text-align: center;
+    padding: 30px 10px;
+}
+
+.description {
+    max-width: 650px;
+    margin: 15px auto 25px;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+.role-probabilities {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.role-probabilities div {
+    background: var(--panel2);
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.role-probabilities strong {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.year-label {
+    color: var(--gold);
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.age-label {
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.stat {
+    background: var(--panel2);
+    padding: 13px;
+    border-radius: 7px;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 9px;
+    font-size: 14px;
+}
+
+.stat-header strong {
+    color: var(--gold);
+}
+
+.bar {
+    width: 100%;
+    height: 8px;
+    background: #171713;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    transition: width 0.25s;
+}
+
+.health .bar-fill { background: #a75b50; }
+.wealth .bar-fill { background: var(--gold); }
+.happiness .bar-fill { background: #86a8b9; }
+.reputation .bar-fill { background: #b9a0cc; }
+.intelligence .bar-fill { background: #8da8d0; }
+.strength .bar-fill { background: #d19a72; }
+
+.traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.trait {
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    border-radius: 20px;
+    padding: 6px 11px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.actions button {
+    min-height: 65px;
+    line-height: 1.4;
+}
+
+.actions button span {
+    display: block;
+    font-weight: normal;
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.event-panel {
+    border: 1px solid var(--gold);
+    background: #2c291e;
+}
+
+.event-date {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.event-description {
+    line-height: 1.75;
+    margin-bottom: 20px;
+    white-space: pre-line;
+}
+
+.event-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.event-options button {
+    text-align: left;
+    line-height: 1.5;
+}
+
+.log {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.log-year {
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.death-screen {
+    text-align: center;
+    border-color: var(--red);
+}
+
+.death-screen h2 {
+    color: #df8b7d;
+}
+
+.death-screen p {
+    line-height: 1.7;
+}
+
+.footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin: 25px 0;
+}
+
+@media (max-width: 650px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panel {
+        padding: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+<header>
+    <h1>NEW LIFE</h1>
+    <p>A Medieval Life Simulator</p>
+</header>
+
+<main class="container">
+
+<section id="startScreen" class="panel start-screen">
+    <h2>Begin a New Life</h2>
+    <p class="description">
+        Your birth, choices, social position, and the events of your time
+        shape your life in the medieval world.
+    </p>
+
+    <div class="role-probabilities">
+        <div><strong>Serf</strong>85% chance</div>
+        <div><strong>Knight</strong>12.5% chance</div>
+        <div><strong>Noble</strong>2.5% chance</div>
+    </div>
+
+    <button onclick="startLife()">New Life</button>
+</section>
+
+<section id="gameScreen" class="hidden">
+
+    <section class="panel">
+        <div class="topbar">
+            <div>
+                <div id="yearDisplay" class="year-label"></div>
+                <div id="ageDisplay" class="age-label"></div>
+            </div>
+            <div>
+                <strong id="roleDisplay"></strong>
+                <div id="goalDisplay" class="age-label"></div>
+            </div>
+        </div>
+
+        <div id="statsContainer" class="stats"></div>
+        <div id="traitsContainer" class="traits"></div>
+    </section>
+
+    <section id="eventPanel" class="panel event-panel hidden">
+        <div id="eventDate" class="event-date"></div>
+        <h2 id="eventTitle"></h2>
+        <div id="eventDescription" class="event-description"></div>
+        <div id="eventOptions" class="event-options"></div>
+    </section>
+
+    <section id="actionsPanel" class="panel">
+        <h2>Your Actions</h2>
+        <p class="age-label">
+            Choose one action per year, then end the year.
+        </p>
+
+        <div class="actions">
+            <button onclick="doAction('work')">
+                Work <span>Earn money</span>
+            </button>
+            <button onclick="doAction('train')">
+                Train <span>Improve strength</span>
+            </button>
+            <button onclick="doAction('study')">
+                Study <span>Improve intelligence</span>
+            </button>
+            <button onclick="doAction('socialize')">
+                Socialize <span>Improve happiness</span>
+            </button>
+            <button onclick="doAction('rest')">
+                Rest <span>Recover health</span>
+            </button>
+            <button onclick="doAction('duty')">
+                Role Duty <span>Fulfill responsibilities</span>
+            </button>
+        </div>
+
+        <div style="margin-top:20px;text-align:center">
+            <button id="endYearButton" class="green" onclick="endYear()">
+                End Year
+            </button>
+        </div>
+    </section>
+
+    <section id="deathScreen" class="panel death-screen hidden">
+        <h2>Your Life Has Ended</h2>
+        <p id="deathMessage"></p>
+        <p id="deathSummary"></p>
+        <button onclick="startLife()">Begin Another Life</button>
+    </section>
+
+    <section class="panel">
+        <h2>Chronicle of Your Life</h2>
+        <div id="chronicle" class="log"></div>
+    </section>
+</section>
+
+<div class="footer-note">
+    A fictional medieval life simulation.
+</div>
+</main>
+
+<script>
+"use strict";
+
+// =============================================
+// SETTINGS
+// =============================================
+
+const START_YEAR_MIN = 800;
+const START_YEAR_MAX = 1400;
+
+const CHILDHOOD_END_AGE = 5;
+
+// Childhood: 90% chance of a quiet year.
+const CHILDHOOD_QUIET_CHANCE = 0.90;
+
+// Adult years: 75% chance of a quiet year,
+// unless a historical or scheduled major event is due.
+const NORMAL_QUIET_CHANCE = 0.75;
+
+const FIRST_MAJOR_EVENT_MIN_AGE = 6;
+const FIRST_MAJOR_EVENT_MAX_AGE = 8;
+const MAJOR_EVENT_INTERVAL_MIN = 3;
+const MAJOR_EVENT_INTERVAL_MAX = 5;
+
+let player = null;
+let nextMajorEventAge = null;
+let currentEvent = null;
+let gameOver = false;
+let actionUsedThisYear = false;
+let yearEnding = false;
+
+// =============================================
+// HELPERS
+// =============================================
+
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function changeStat(stat, amount) {
+    if (!player || !(stat in player)) return;
+
+    if (stat === "wealth") {
+        player.wealth = Math.max(0, player.wealth + amount);
+    } else {
+        player[stat] = clamp(player[stat] + amount, 0, 100);
+    }
+}
+
+function formatYear(year) {
+    return year + " AD";
+}
+
+function record(message) {
+    player.chronicle.unshift({
+        year: player.year,
+        age: player.age,
+        message
+    });
+
+    if (player.chronicle.length > 120) {
+        player.chronicle.pop();
+    }
+}
+
+function updateChronicle() {
+    document.getElementById("chronicle").innerHTML =
+        player.chronicle.map(entry => `
+            <div class="log-entry">
+                <span class="log-year">
+                    ${formatYear(entry.year)} — Age ${entry.age}
+                </span><br>
+                ${entry.message}
+            </div>
+        `).join("");
+}
+
+// =============================================
+// CHARACTER CREATION
+// =============================================
+
+function chooseRole() {
+    const roll = Math.random();
+
+    if (roll < 0.85) return "Serf";
+    if (roll < 0.975) return "Knight";
+    return "Noble";
+}
+
+function startLife() {
+    const role = chooseRole();
+    const startingYear = randomInt(START_YEAR_MIN, START_YEAR_MAX);
+
+    const startingStats = {
+        Serf: {
+            health: 80,
+            wealth: 15,
+            happiness: 65,
+            reputation: 25,
+            intelligence: 20,
+            strength: 30
+        },
+        Knight: {
+            health: 90,
+            wealth: 60,
+            happiness: 65,
+            reputation: 55,
+            intelligence: 35,
+            strength: 65
+        },
+        Noble: {
+            health: 85,
+            wealth: 150,
+            happiness: 70,
+            reputation: 65,
+            intelligence: 55,
+            strength: 30
+        }
+    };
+
+    player = {
+        age: 0,
+        year: startingYear,
+        birthYear: startingYear,
+        role,
+        ...startingStats[role],
+        alive: true,
+        pendingSummons: false,
+        historicalEventsSeen: [],
+        chronicle: [],
+        lifeGoal: randomChoice([
+            "Become wealthy",
+            "Earn a respected reputation",
+            "Live a happy life",
+            "Become powerful",
+            "Survive into old age"
+        ])
+    };
+
+    nextMajorEventAge = randomInt(
+        FIRST_MAJOR_EVENT_MIN_AGE,
+        FIRST_MAJOR_EVENT_MAX_AGE
+    );
+
+    currentEvent = null;
+    gameOver = false;
+    actionUsedThisYear = false;
+    yearEnding = false;
+
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+    document.getElementById("deathScreen").classList.add("hidden");
+    document.getElementById("eventPanel").classList.add("hidden");
+    document.getElementById("actionsPanel").classList.remove("hidden");
+
+    record(
+        `You were born into a ${role.toLowerCase()} family. ` +
+        `Your life begins in ${formatYear(startingYear)}.`
+    );
+
+    render();
+    showChildhoodEvent();
+}
+
+// =============================================
+// DISPLAY
+// =============================================
+
+function render() {
+    if (!player) return;
+
+    document.getElementById("yearDisplay").textContent =
+        formatYear(player.year);
+
+    document.getElementById("ageDisplay").textContent =
+        `Age ${player.age}`;
+
+    document.getElementById("roleDisplay").textContent = player.role;
+    document.getElementById("goalDisplay").textContent =
+        "Life goal: " + player.lifeGoal;
+
+    const stats = [
+        ["health", "Health", player.health],
+        ["wealth", "Wealth", player.wealth],
+        ["happiness", "Happiness", player.happiness],
+        ["reputation", "Reputation", player.reputation],
+        ["intelligence", "Intelligence", player.intelligence],
+        ["strength", "Strength", player.strength]
+    ];
+
+    document.getElementById("statsContainer").innerHTML =
+        stats.map(([key, label, value]) => {
+            const barValue = clamp(value, 0, 100);
+
+            return `
+                <div class="stat ${key}">
+                    <div class="stat-header">
+                        <span>${label}</span>
+                        <strong>${Math.round(value)}</strong>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill"
+                            style="width:${barValue}%;"></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    const traits = [];
+
+    if (player.health >= 80) traits.push("Healthy");
+    if (player.health <= 30) traits.push("Poor Health");
+    if (player.wealth >= 100) traits.push("Wealthy");
+    if (player.reputation >= 75) traits.push("Well Respected");
+    if (player.intelligence >= 70) traits.push("Learned");
+    if (player.strength >= 70) traits.push("Strong");
+    if (player.happiness <= 25) traits.push("Unhappy");
+    if (player.role === "Serf") traits.push("Limited Freedom");
+    if (player.role === "Knight") traits.push("Military Service");
+    if (player.role === "Noble") traits.push("High Social Status");
+    if (player.role === "Free Commoner") traits.push("Free Status");
+
+    document.getElementById("traitsContainer").innerHTML =
+        traits.map(trait => `<span class="trait">${trait}</span>`).join("");
+
+    const blocked = gameOver || currentEvent !== null || yearEnding;
+
+    document.querySelectorAll("#actionsPanel button").forEach(button => {
+        if (button.id === "endYearButton") {
+            button.disabled = blocked;
+        } else {
+            button.disabled = blocked || actionUsedThisYear;
+        }
+    });
+
+    updateChronicle();
+}
+
+// =============================================
+// EVENT DISPLAY
+// =============================================
+
+function showEvent(event) {
+    if (gameOver) return;
+
+    currentEvent = event;
+
+    document.getElementById("eventPanel").classList.remove("hidden");
+    document.getElementById("eventDate").textContent =
+        `${formatYear(player.year)} • Age ${player.age}`;
+    document.getElementById("eventTitle").textContent = event.title;
+    document.getElementById("eventDescription").textContent =
+        event.description;
+
+    const optionsContainer = document.getElementById("eventOptions");
+    optionsContainer.innerHTML = "";
+
+    event.options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option.text;
+
+        button.addEventListener("click", () => {
+            if (!currentEvent || gameOver) return;
+
+            const selectedEvent = currentEvent;
+            currentEvent = null;
+
+            option.effect();
+
+            record(`${selectedEvent.title}: ${option.text}.`);
+
+            document.getElementById("eventPanel").classList.add("hidden");
+
+            if (player.health <= 0) {
+                die("Your health failed after the events of your life.");
+                return;
+            }
+
+            render();
+
+            if (yearEnding) {
+                finishYear();
+            }
+        });
+
+        optionsContainer.appendChild(button);
+    });
+
+    render();
+}
+
+// =============================================
+// QUIET CHILDHOOD
+// =============================================
+
+function showChildhoodEvent() {
+    if (gameOver) return;
+
+    if (Math.random() < CHILDHOOD_QUIET_CHANCE) {
+        showEvent({
+            title: "A Quiet Year",
+            description:
+                "Another peaceful year passes. You spend time with your " +
+                "family and grow a little older. Nothing particularly " +
+                "unusual happens.",
+            options: [
+                {
+                    text: "Continue",
+                    effect: () => changeStat("happiness", 2)
+                }
+            ]
+        });
+
+        return;
+    }
+
+    const events = [
+        {
+            title: "Playing with Other Children",
+            description:
+                "You spend the afternoon playing with children from the village.",
+            options: [
+                {
+                    text: "Enjoy the day",
+                    effect: () => changeStat("happiness", 5)
+                }
+            ]
+        },
+        {
+            title: "Helping Your Family",
+            description:
+                "Your family asks you to help with a few simple chores.",
+            options: [
+                {
+                    text: "Help out",
+                    effect: () => {
+                        changeStat("reputation", 2);
+                        changeStat("happiness", -1);
+                    }
+                }
+            ]
+        },
+        {
+            title: "Learning Something New",
+            description:
+                "An older villager teaches you something useful.",
+            options: [
+                {
+                    text: "Pay attention",
+                    effect: () => changeStat("intelligence", 2)
+                }
+            ]
+        },
+        {
+            title: "A Family Celebration",
+            description:
+                "Your family joins a small local celebration.",
+            options: [
+                {
+                    text: "Celebrate together",
+                    effect: () => changeStat("happiness", 4)
+                }
+            ]
+        }
+    ];
+
+    showEvent(randomChoice(events));
+}
+
+// =============================================
+// CHARACTER ACTIONS
+// =============================================
+
+function doAction(action) {
+    if (gameOver || currentEvent || actionUsedThisYear || yearEnding) {
+        return;
+    }
+
+    actionUsedThisYear = true;
+
+    switch (action) {
+        case "work":
+            if (player.role === "Serf") {
+                changeStat("wealth", randomInt(5, 12));
+                changeStat("happiness", -1);
+                record("You worked the land and earned some money.");
+            } else if (player.role === "Knight") {
+                changeStat("wealth", randomInt(8, 18));
+                changeStat("reputation", 2);
+                record("You completed paid duties as a knight.");
+            } else {
+                changeStat("wealth", randomInt(5, 15));
+                record("You managed your household and income.");
+            }
+            break;
+
+        case "train":
+            changeStat("strength", randomInt(3, 7));
+            changeStat("health", -2);
+            record("You trained to improve your strength.");
+            break;
+
+        case "study":
+            changeStat("intelligence", randomInt(3, 7));
+            changeStat("happiness", -1);
+            record("You spent time learning and studying.");
+            break;
+
+        case "socialize":
+            changeStat("happiness", randomInt(4, 8));
+            changeStat("reputation", 2);
+            record("You spent time with your community.");
+            break;
+
+        case "rest":
+            changeStat("health", randomInt(5, 12));
+            changeStat("happiness", 2);
+            record("You rested and recovered.");
+            break;
+
+        case "duty":
+            if (player.role === "Serf") {
+                changeStat("wealth", randomInt(2, 7));
+                changeStat("reputation", 2);
+                record("You fulfilled your duties to your lord.");
+            } else if (player.role === "Knight") {
+                changeStat("reputation", randomInt(3, 7));
+                changeStat("strength", 2);
+                record("You practiced your knightly duties.");
+            } else {
+                changeStat("reputation", randomInt(3, 7));
+                changeStat("wealth", randomInt(2, 8));
+                record("You managed your estate.");
+            }
+            break;
+    }
+
+    if (
+        player.role === "Serf" &&
+        player.wealth >= 100 &&
+        Math.random() < 0.08
+    ) {
+        player.role = "Free Commoner";
+        record(
+            "After years of saving, you gained enough independence " +
+            "to leave your former status as a serf."
+        );
+    }
+
+    if (player.health <= 0) {
+        die("Your health failed.");
+        return;
+    }
+
+    render();
+}
+
+// =============================================
+// NORMAL EVENTS
+// =============================================
+
+function randomEvent() {
+    const events = [
+        {
+            title: "A Poor Harvest",
+            description:
+                "The harvest is smaller than expected. Food becomes more expensive.",
+            options: [
+                {
+                    text: "Buy food and supplies",
+                    effect: () => {
+                        changeStat("wealth", -8);
+                        changeStat("health", 2);
+                    }
+                },
+                {
+                    text: "Save your money",
+                    effect: () => {
+                        changeStat("health", -4);
+                        changeStat("wealth", 3);
+                    }
+                }
+            ]
+        },
+        {
+            title: "A Traveling Healer",
+            description:
+                "A traveling healer arrives nearby and offers treatment.",
+            options: [
+                {
+                    text: "Pay for treatment",
+                    effect: () => {
+                        if (player.wealth >= 10) {
+                            changeStat("wealth", -10);
+                            changeStat("health", 12);
+                        } else {
+                            changeStat("happiness", -2);
+                        }
+                    }
+                },
+                {
+                    text: "Save your money",
+                    effect: () => changeStat("wealth", 2)
+                }
+            ]
+        },
+        {
+            title: "A Family Opportunity",
+            description:
+                "Your family or neighbors offer you a chance to help with a project.",
+            options: [
+                {
+                    text: "Accept the opportunity",
+                    effect: () => {
+                        changeStat("wealth", randomInt(3, 10));
+                        changeStat("reputation", 3);
+                    }
+                },
+                {
+                    text: "Decline",
+                    effect: () => changeStat("happiness", 1)
+                }
+            ]
+        },
+        {
+            title: "A Local Festival",
+            description:
+                "A festival brings people together from nearby settlements.",
+            options: [
+                {
+                    text: "Join the celebration",
+                    effect: () => {
+                        changeStat("happiness", 7);
+                        changeStat("wealth", -3);
+                    }
+                },
+                {
+                    text: "Stay home",
+                    effect: () => changeStat("wealth", 2)
+                }
+            ]
+        },
+        {
+            title: "A Dispute with a Neighbor",
+            description:
+                "A neighbor accuses you of taking something that belongs to them.",
+            options: [
+                {
+                    text: "Settle the dispute",
+                    effect: () => {
+                        changeStat("reputation", 2);
+                        changeStat("wealth", -2);
+                    }
+                },
+                {
+                    text: "Refuse to cooperate",
+                    effect: () => {
+                        changeStat("reputation", -4);
+                        changeStat("happiness", -2);
+                    }
+                }
+            ]
+        }
+    ];
+
+    if (player.role === "Knight") {
+        events.push({
+            title: "A Call to Arms",
+            description:
+                "A local lord asks you to help protect the surrounding lands.",
+            options: [
+                {
+                    text: "Accept the duty",
+                    effect: () => {
+                        changeStat("reputation", 7);
+                        changeStat("wealth", 8);
+                        changeStat("health", -4);
+                    }
+                },
+                {
+                    text: "Decline the request",
+                    effect: () => changeStat("reputation", -4)
+                }
+            ]
+        });
+    }
+
+    if (player.role === "Noble") {
+        events.push({
+            title: "A Dispute Over Land",
+            description:
+                "Another noble challenges your family's claim to a piece of land.",
+            options: [
+                {
+                    text: "Negotiate a settlement",
+                    effect: () => {
+                        changeStat("wealth", -8);
+                        changeStat("reputation", 4);
+                    }
+                },
+                {
+                    text: "Stand your ground",
+                    effect: () => {
+                        changeStat("reputation", 5);
+                        changeStat("wealth", -3);
+                    }
+                }
+            ]
+        });
+    }
+
+    if (player.role === "Serf" || player.role === "Free Commoner") {
+        events.push({
+            title: "The Lord Raises Taxes",
+            description:
+                "Your lord demands more money from the people to cover his expenses.",
+            options: [
+                {
+                    text: "Pay the taxes",
+                    effect: () => {
+                        changeStat("wealth", -10);
+                        changeStat("reputation", 2);
+                    }
+                },
+                {
+                    text: "Refuse to pay",
+                    effect: () => {
+                        changeStat("wealth", -5);
+                        changeStat("reputation", -8);
+                        changeStat("happiness", -5);
+                        player.pendingSummons = true;
+                    }
+                }
+            ]
+        });
+    }
+
+    if (player.pendingSummons) {
+        events.push({
+            title: "The Steward's Summons",
+            description:
+                "The lord's steward has heard that you refused to pay your taxes. " +
+                "You have been ordered to explain yourself.",
+            options: [
+                {
+                    text: "Apologize and negotiate",
+                    effect: () => {
+                        changeStat("wealth", -5);
+                        changeStat("reputation", 2);
+                        player.pendingSummons = false;
+                    }
+                },
+                {
+                    text: "Stand your ground",
+                    effect: () => {
+                        changeStat("reputation", -10);
+                        changeStat("happiness", -5);
+                        player.pendingSummons = false;
+                    }
+                }
+            ]
+        });
+    }
+
+    return randomChoice(events);
+}
+
+// =============================================
+// HISTORICAL EVENTS
+// =============================================
+
+const historicalEvents = [
+    {
+        id: "viking-raids",
+        start: 800,
+        end: 1050,
+        title: "Viking Raids",
+        description:
+            "Reports of Viking raids reach parts of Europe. Trade becomes " +
+            "uncertain, and some nearby settlements prepare for trouble.",
+        options: [
+            {
+                text: "Help protect the community",
+                effect: () => {
+                    changeStat("reputation", 5);
+                    changeStat("health", -3);
+                }
+            },
+            {
+                text: "Keep your household safe",
+                effect: () => {
+                    changeStat("wealth", -5);
+                    changeStat("happiness", 2);
+                }
+            }
+        ]
+    },
+    {
+        id: "norman-conquest",
+        start: 1066,
+        end: 1066,
+        title: "The Norman Conquest",
+        description:
+            "William of Normandy defeats King Harold at the Battle of Hastings. " +
+            "England changes rulers, and land and power begin shifting to new hands.",
+        options: [
+            {
+                text: "Adapt to the new rulers",
+                effect: () => {
+                    changeStat("reputation", 3);
+                    changeStat("happiness", -2);
+                }
+            },
+            {
+                text: "Remain loyal to the old order",
+                effect: () => {
+                    changeStat("reputation", -3);
+                    changeStat("happiness", 2);
+                }
+            }
+        ]
+    },
+    {
+        id: "first-crusade",
+        start: 1096,
+        end: 1099,
+        title: "The First Crusade",
+        description:
+            "News of the First Crusade spreads through Western Europe. " +
+            "Travelers and preachers pass through the region, while some " +
+            "families consider joining the expedition.",
+        options: [
+            {
+                text: "Help travelers prepare",
+                effect: () => {
+                    changeStat("reputation", 4);
+                    changeStat("wealth", -4);
+                }
+            },
+            {
+                text: "Focus on daily life",
+                effect: () => changeStat("wealth", 2)
+            }
+        ]
+    },
+    {
+        id: "magna-carta",
+        start: 1215,
+        end: 1215,
+        title: "Magna Carta",
+        description:
+            "King John agrees to Magna Carta after conflict with his barons. " +
+            "The charter limits some exercises of royal authority, though " +
+            "it does not establish equal rights for everyone.",
+        options: [
+            {
+                text: "Welcome limits on royal power",
+                effect: () => {
+                    changeStat("happiness", 3);
+                    changeStat("reputation", 2);
+                }
+            },
+            {
+                text: "Avoid political disputes",
+                effect: () => changeStat("happiness", 1)
+            }
+        ]
+    },
+    {
+        id: "black-death",
+        start: 1347,
+        end: 1351,
+        title: "The Black Death",
+        description:
+            "A devastating plague spreads through Europe. Trade is disrupted, " +
+            "communities lose many people, and fear spreads through towns and " +
+            "villages. The effects vary by region and year.",
+        options: [
+            {
+                text: "Spend money on supplies and precautions",
+                effect: () => {
+                    changeStat("wealth", -12);
+                    changeStat("happiness", -2);
+                }
+            },
+            {
+                text: "Stay home and limit contact",
+                effect: () => {
+                    changeStat("happiness", -4);
+                    changeStat("wealth", -3);
+                }
+            },
+            {
+                text: "Continue working as usual",
+                effect: () => {
+                    changeStat("wealth", 5);
+                    changeStat("health", -5);
+                }
+            }
+        ]
+    }
+];
+
+function checkHistoricalEvent() {
+    const available = historicalEvents.filter(event =>
+        player.year >= event.start &&
+        player.year <= event.end &&
+        !player.historicalEventsSeen.includes(event.id)
+    );
+
+    if (available.length === 0) return false;
+
+    const event = randomChoice(available);
+    player.historicalEventsSeen.push(event.id);
+
+    record(`A historical event occurred: ${event.title}.`);
+    showEvent(event);
+
+    return true;
+}
+
+// =============================================
+// MAJOR EVENTS
+// =============================================
+
+function scheduleNextMajorEvent() {
+    nextMajorEventAge = player.age + randomInt(
+        MAJOR_EVENT_INTERVAL_MIN,
+        MAJOR_EVENT_INTERVAL_MAX
+    );
+}
+
+function checkMajorEvent() {
+    if (player.age < nextMajorEventAge) return false;
+
+    // Schedule the next major event.
+    scheduleNextMajorEvent();
+
+    const events = [
+        {
+            title: "A Great Famine",
+            description:
+                "Poor harvests have left food scarce throughout the region. " +
+                "Prices rise, and many families struggle.",
+            options: [
+                {
+                    text: "Buy extra supplies",
+                    effect: () => {
+                        changeStat("wealth", -15);
+                        changeStat("health", 3);
+                    }
+                },
+                {
+                    text: "Save your money",
+                    effect: () => {
+                        changeStat("health", -8);
+                        changeStat("happiness", -5);
+                    }
+                }
+            ]
+        },
+        {
+            title: "The Lord Raises Taxes",
+            description:
+                "Your lord demands additional payments from the people. " +
+                "The new taxes cause anger throughout the region.",
+            options: [
+                {
+                    text: "Pay the taxes",
+                    effect: () => {
+                        changeStat("wealth", -15);
+                        changeStat("reputation", 2);
+                    }
+                },
+                {
+                    text: "Refuse to pay",
+                    effect: () => {
+                        changeStat("wealth", -5);
+                        changeStat("reputation", -8);
+                        changeStat("happiness", -5);
+
+                        if (
+                            player.role === "Serf" ||
+                            player.role === "Free Commoner"
+                        ) {
+                            player.pendingSummons = true;
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            title: "War in the Kingdom",
+            description:
+                "Conflict breaks out between rival powers. Trade slows, " +
+                "and the people worry about what the fighting will bring.",
+            options: [
+                {
+                    text: "Support the war effort",
+                    effect: () => {
+                        if (player.role === "Knight") {
+                            changeStat("reputation", 10);
+                            changeStat("wealth", 5);
+                            changeStat("health", -8);
+                        } else if (player.role === "Noble") {
+                            changeStat("wealth", -15);
+                            changeStat("reputation", 5);
+                        } else {
+                            changeStat("wealth", -8);
+                            changeStat("happiness", -4);
+                        }
+                    }
+                },
+                {
+                    text: "Protect your household",
+                    effect: () => {
+                        changeStat("wealth", -5);
+                        changeStat("happiness", 2);
+                    }
+                }
+            ]
+        },
+        {
+            title: "A Disease Outbreak",
+            description:
+                "A disease spreads through nearby settlements. People avoid " +
+                "crowds, and everyday life becomes more difficult.",
+            options: [
+                {
+                    text: "Stay cautious",
+                    effect: () => {
+                        changeStat("happiness", -3);
+                        changeStat("wealth", -3);
+                    }
+                },
+                {
+                    text: "Continue life as usual",
+                    effect: () => changeStat("health", -8)
+                }
+            ]
+        },
+        {
+            title: "A New Ruler",
+            description:
+                "News arrives that a new ruler has taken power. Nobody knows " +
+                "whether the new administration will bring peace or hardship.",
+            options: [
+                {
+                    text: "Support the new ruler",
+                    effect: () => {
+                        changeStat("reputation", 5);
+                        changeStat("happiness", 2);
+                    }
+                },
+                {
+                    text: "Keep your opinions private",
+                    effect: () => changeStat("happiness", 1)
+                }
+            ]
+        },
+        {
+            title: "A Harsh Winter",
+            description:
+                "An unusually cold winter damages supplies and makes travel difficult.",
+            options: [
+                {
+                    text: "Spend money on supplies",
+                    effect: () => {
+                        changeStat("wealth", -12);
+                        changeStat("health", 3);
+                    }
+                },
+                {
+                    text: "Make do with what you have",
+                    effect: () => {
+                        changeStat("health", -6);
+                        changeStat("happiness", -3);
+                    }
+                }
+            ]
+        }
+    ];
+
+    if (player.role === "Knight") {
+        events.push({
+            title: "A Royal Tournament",
+            description:
+                "A major tournament is announced. Knights from across the " +
+                "region arrive to compete for prizes and prestige.",
+            options: [
+                {
+                    text: "Enter the tournament",
+                    effect: () => {
+                        changeStat("strength", 5);
+                        changeStat("reputation", 10);
+
+                        if (Math.random() < 0.25) {
+                            changeStat("health", -10);
+                        }
+
+                        if (Math.random() < 0.5) {
+                            changeStat("wealth", 15);
+                        }
+                    }
+                },
+                {
+                    text: "Watch from the sidelines",
+                    effect: () => changeStat("happiness", 3)
+                }
+            ]
+        });
+    }
+
+    if (player.role === "Noble") {
+        events.push({
+            title: "A Royal Invitation",
+            description:
+                "You are invited to an important gathering of nobles. " +
+                "Your behavior could affect your family's standing.",
+            options: [
+                {
+                    text: "Attend the gathering",
+                    effect: () => {
+                        changeStat("reputation", 8);
+                        changeStat("wealth", -8);
+                        changeStat("intelligence", 2);
+                    }
+                },
+                {
+                    text: "Decline the invitation",
+                    effect: () => {
+                        changeStat("happiness", 2);
+                        changeStat("reputation", -3);
+                    }
+                }
+            ]
+        });
+    }
+
+    record("A major event has shaken the region.");
+    showEvent(randomChoice(events));
+    return true;
+}
+
+// =============================================
+// YEAR TRACKING
+// =============================================
+
+function endYear() {
+    if (gameOver || currentEvent || yearEnding) return;
+
+    yearEnding = true;
+
+    player.age++;
+    player.year++;
+    actionUsedThisYear = false;
+
+    record(`You reached age ${player.age}. Another year has passed.`);
+
+    if (checkDeath()) return;
+
+    render();
+
+    // Childhood remains peaceful and has no major events.
+    if (player.age <= CHILDHOOD_END_AGE) {
+        showChildhoodEvent();
+        return;
+    }
+
+    // Real historical events take priority.
+    if (checkHistoricalEvent()) return;
+
+    // Scheduled major events always occur when due.
+    // Quiet-year chances cannot cancel them.
+    if (checkMajorEvent()) return;
+
+    // Most remaining years pass quietly.
+    if (Math.random() < NORMAL_QUIET_CHANCE) {
+        record("Another year passes without any major events.");
+        finishYear();
+        return;
+    }
+
+    // A normal event happens in the remaining years.
+    showEvent(randomEvent());
+}
+
+function finishYear() {
+    if (gameOver) return;
+
+    yearEnding = false;
+    actionUsedThisYear = false;
+    render();
+}
+
+// =============================================
+// DEATH SYSTEM
+// =============================================
+
+function checkDeath() {
+    if (gameOver) return true;
+
+    let deathChance;
+
+    if (player.age <= 5) {
+        deathChance = 0.20;
+    } else if (player.age < 40) {
+        deathChance = 0.025;
+    } else {
+        deathChance = 0.25;
+    }
+
+    if (player.health <= 25) deathChance += 0.10;
+    if (player.health <= 10) deathChance += 0.15;
+
+    deathChance = Math.min(deathChance, 0.95);
+
+    if (Math.random() < deathChance) {
+        const causes = [
+            "a disease",
+            "an illness",
+            "an accident"
+        ];
+
+        die(`Your life ended due to ${randomChoice(causes)}.`);
+        return true;
+    }
+
+    return false;
+}
+
+function die(message) {
+    if (gameOver) return;
+
+    gameOver = true;
+    currentEvent = null;
+    yearEnding = false;
+
+    document.getElementById("eventPanel").classList.add("hidden");
+    document.getElementById("actionsPanel").classList.add("hidden");
+    document.getElementById("deathScreen").classList.remove("hidden");
+
+    record(message);
+
+    document.getElementById("deathMessage").textContent =
+        `${message} You lived to age ${player.age}.`;
+
+    document.getElementById("deathSummary").textContent =
+        `You were a ${player.role.toLowerCase()}, born in ` +
+        `${formatYear(player.birthYear)} and died in ` +
+        `${formatYear(player.year)}. Your final wealth was ${player.wealth}.`;
+
+    render();
+}
+</script>
+</body>
+</html>
